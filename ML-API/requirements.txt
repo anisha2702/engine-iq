@@ -3,6 +3,6 @@ uvicorn[standard]==0.29.0
 scikit-learn
 joblib==1.4.0
 numpy
-pydantic==2.7.0
+pydantic==2.7.1
 python-dotenv==1.0.1
 gdown==5.1.0
