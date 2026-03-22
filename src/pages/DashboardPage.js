@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { SENSORS, SENSOR_CATEGORIES } from "../services/sensorMeta";
 import { submitPrediction } from "../services/api";
+import { useEffect } from "react";
+import axios from "axios";
 
 const getDefaults = () => {
   const obj = {};
@@ -22,6 +24,12 @@ export default function DashboardPage() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [apiError, setApiError] = useState("");
   const [tooltip, setTooltip] = useState(null);
+
+  useEffect(() => {
+  // Ping both services on page load to wake them up
+  axios.get(`${process.env.REACT_APP_API_URL}/api/health`, { timeout: 120000 })
+    .catch(() => {});
+}, []);
 
   const handleChange = (key, val) => {
     setValues((prev) => ({ ...prev, [key]: val }));
@@ -206,7 +214,7 @@ export default function DashboardPage() {
             {loading ? (
               <>
                 <div className="w-4 h-4 border-2 border-gray-900 border-t-transparent rounded-full animate-spin" />
-                Analysing Engine...
+                Waking up server, please wait...
               </>
             ) : (
               "🔬 Run ML Prediction"
