@@ -13,24 +13,21 @@ export function AuthProvider({ children }) {
     const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         setUser(firebaseUser);
-        // Sync user to MongoDB
-        try {
-          await api.post("/users/sync", {
-            googleId: firebaseUser.uid,
-            email: firebaseUser.email,
-            name: firebaseUser.displayName,
-            photoURL: firebaseUser.photoURL,
-          });
-        } catch (e) {
-          console.warn("User sync failed:", e.message);
-        }
-      } else {
-        setUser(null);
-      }
-      setLoading(false);
-    });
-    return unsub;
-  }, []);
+  //       
+  // Fire and forget — don't await, don't block login
+      api.post("/users/sync", {
+        googleId: firebaseUser.uid,
+        email: firebaseUser.email,
+        name: firebaseUser.displayName,
+        photoURL: firebaseUser.photoURL,
+      }, { timeout: 30000 }).catch((e) => console.warn("User sync failed:", e.message));
+    } else {
+      setUser(null);
+    }
+    setLoading(false);
+  });
+  return unsub;
+}, []);
 
   const loginWithGoogle = () => signInWithPopup(auth, googleProvider);
   const logout = () => signOut(auth);
